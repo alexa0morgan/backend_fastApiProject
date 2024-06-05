@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
 
@@ -34,6 +36,7 @@ def read_brands(
 ):
     return session.exec(
         select(Brand)
+        .where(Brand.deled_at == None)  # выборка только неудаленных записей
         .where(Brand.id == brand_id if brand_id else True)
         .where(Brand.id.in_(brand_ids) if brand_ids else True)
         .where(Brand.name.like(f'%{name}%') if name else True)
@@ -60,4 +63,19 @@ def update_brand(
     session.add(db_brand)
     session.commit()
     session.refresh(db_brand)
+    return db_brand
+
+
+@router.delete("/delete/{brand_id}", response_model=BrandResponse)
+def delete_brand(
+        session: CurrentSession,
+        _: CurrentAdminUser,
+        brand_id: int,
+):
+    db_brand = session.get(Brand, brand_id)
+    if not db_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+
+    db_brand.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
+    session.commit()
     return db_brand
