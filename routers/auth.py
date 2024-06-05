@@ -32,9 +32,9 @@ class TokenData(BaseModel):
 
 def authenticate_user(session: Session, username: str, password: str):
     user = session.exec(
-            select(User)
-            .where(User.email == username)
-            ).first()
+        select(User)
+        .where(User.email == username)
+    ).first()
     if user.deleted_at:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found or deleted")
     if not user:
@@ -74,7 +74,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
             select(User)
             .where(User.email == token_data.username)
             .where(User.deleted_at == None)
-            ).first()
+        ).first()
         if user is None:
             raise credentials_exception
         return user

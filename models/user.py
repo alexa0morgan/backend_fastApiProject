@@ -1,4 +1,3 @@
-import datetime
 import enum
 
 from sqlmodel import Field, SQLModel, Enum, Column
@@ -17,7 +16,7 @@ class UserBase(SQLModel):
     email: str = Field(unique=True)
     role_id: Role = Field(sa_column=Column(Enum(Role)))
     send_notifications: bool
-    deleted_at: datetime.datetime | None = None
+    deleted_at: str | None = None
 
 
 class User(UserBase, table=True):
