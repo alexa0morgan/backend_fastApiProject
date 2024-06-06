@@ -16,12 +16,12 @@ class UserBase(SQLModel):
     email: str = Field(unique=True)
     role_id: Role = Field(sa_column=Column(Enum(Role)))
     send_notifications: bool
-    deleted_at: str | None = None
 
 
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
+    deleted_at: str | None = None
 
 
 class UserResponse(UserBase):
