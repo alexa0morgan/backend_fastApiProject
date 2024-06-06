@@ -31,12 +31,12 @@ def read_brands(
         brand_ids: list[int] = Query(None),
         name: str = Query(None),
         names: list[str] = Query(None),
-        offset: int = 0,
+        offset: int = Query(0),
         limit: int = Query(default=5, le=100)
 ):
     return session.exec(
         select(Brand)
-        .where(Brand.deled_at == None)  # выборка только неудаленных записей
+        .where(Brand.deleted_at == None)  # выборка только неудаленных записей
         .where(Brand.id == brand_id if brand_id else True)
         .where(Brand.id.in_(brand_ids) if brand_ids else True)
         .where(Brand.name.like(f'%{name}%') if name else True)
@@ -78,4 +78,4 @@ def delete_brand(
 
     db_brand.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
     session.commit()
-    return db_brand
+    return {"message": "Brand deleted successfully"}
