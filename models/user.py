@@ -24,6 +24,8 @@ class User(UserBase, table=True):
     hashed_password: str
     deleted_at: str | None = None
 
+    customer_cars: list["CustomerCar"] = Relationship(back_populates="customer")
+
 
 class UserResponse(UserBase):
     id: int
