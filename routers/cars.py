@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query, HTTPException
 from sqlmodel import select
 
 from db import CurrentSession
-from models.car import Car, CarCreate, CarResponse
+from models.car import Car, CarCreate, CarResponse, CarUpdate
 from routers.auth import CurrentAdminUser
 
 router = APIRouter()
@@ -46,7 +46,7 @@ def update_car(
         session: CurrentSession,
         _: CurrentAdminUser,
         car_id: int,
-        car: CarCreate,
+        car: CarUpdate,
 ):
     db_car = session.get(Car, car_id)
     if not db_car:
@@ -60,7 +60,7 @@ def update_car(
     return db_car
 
 
-@router.delete("/delete/{car_id}", response_model=CarResponse)
+@router.delete("/delete/{car_id}")
 def delete_car(
         session: CurrentSession,
         _: CurrentAdminUser,
