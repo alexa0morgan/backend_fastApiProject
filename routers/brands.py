@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
@@ -76,6 +76,6 @@ def delete_brand(
     if not db_brand:
         raise HTTPException(status_code=404, detail="Brand not found")
 
-    db_brand.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
+    db_brand.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
     return {"message": "Brand deleted successfully"}

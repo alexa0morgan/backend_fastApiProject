@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, Query, HTTPException
 from sqlmodel import select
@@ -70,6 +70,6 @@ def delete_car(
     if not db_car:
         raise HTTPException(status_code=404, detail="Car not found")
 
-    db_car.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
+    db_car.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
     return {"message": "Car deleted successfully"}

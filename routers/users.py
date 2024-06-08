@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
@@ -105,6 +105,6 @@ def delete_user(
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    db_user.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
+    db_user.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
     return {"message": "User deleted successfully"}

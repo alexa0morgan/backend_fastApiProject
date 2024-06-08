@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
@@ -70,6 +70,6 @@ def delete_service(
     if not db_service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    db_service.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
+    db_service.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
     return {"message": "Service deleted successfully"}
