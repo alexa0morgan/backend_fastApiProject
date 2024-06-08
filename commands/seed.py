@@ -4,6 +4,7 @@ from db import engine
 from models.brand import Brand
 from models.car import Car
 from models.customer_car import CustomerCar
+from models.service import Service
 from models.user import User, Role
 from routers.auth import pwd_context
 
@@ -94,6 +95,32 @@ with Session(engine) as session:
         customer_id=4,
         year=2020,
         license_plate="B456BB"
+    ))
+
+    session.add(Service(
+        name="Oil change",
+        minPrice=1000_00,
+        minTime=1800,
+    ))
+    session.add(Service(
+        name="Tire replacement",
+        minPrice=5000_00,
+        minTime=3600,
+    ))
+    session.add(Service(
+        name="Wheel alignment",
+        minPrice=3000_00,
+        minTime=2400,
+    ))
+    session.add(Service(
+        name="Brake pad replacement",
+        minPrice=7000_00,
+        minTime=3600,
+    ))
+    session.add(Service(
+        name="Diagnostics",
+        minPrice=2000_00,
+        minTime=1800,
     ))
 
     session.commit()
