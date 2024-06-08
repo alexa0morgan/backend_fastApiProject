@@ -1,6 +1,7 @@
 import enum
 
 from sqlmodel import Field, SQLModel, Enum, Column
+from pydantic import computed_field, BaseModel
 
 
 class Role(enum.Enum):
@@ -40,3 +41,17 @@ class UserUpdate(UserBase):
     role_id: Role | None = None
     send_notifications: bool | None = None
     password: str | None = None
+
+
+class PartialUserResponse(BaseModel):
+    id: int
+    email: str
+
+    first_name: str = Field(exclude=True)
+    last_name: str = Field(exclude=True)
+    patronymic: str | None = Field(exclude=True)
+
+    @computed_field(return_type=str)
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name} {self.patronymic or ''}".strip()
