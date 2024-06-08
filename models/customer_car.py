@@ -12,11 +12,14 @@ class CustomerCarBase(SQLModel):
 
 
 class CustomerCar(CustomerCarBase, table=True):
+    __tablename__ = "customer_car"
+
     id: int = Field(default=None, primary_key=True)
     deleted_at: str | None = None
 
     customer: User | None = Relationship(back_populates="customer_cars")
     car: Car | None = Relationship(back_populates="customer_cars")
+    orders: list["Order"] = Relationship(back_populates="customer_car")
 
 
 class CustomerCarCreate(CustomerCarBase):

@@ -104,6 +104,7 @@ def delete_user(
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
+
     db_user.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
     session.commit()
     return {"message": "User deleted successfully"}

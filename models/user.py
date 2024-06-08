@@ -26,6 +26,11 @@ class User(UserBase, table=True):
 
     customer_cars: list["CustomerCar"] = Relationship(back_populates="customer")
 
+    administrator_orders: list["Order"] = Relationship(back_populates="administrator", sa_relationship_kwargs={
+        "foreign_keys": "[Order.administrator_id]"})
+    employee_orders: list["Order"] = Relationship(back_populates="employee",
+                                                  sa_relationship_kwargs={"foreign_keys": "[Order.employee_id]"})
+
 
 class UserResponse(UserBase):
     id: int

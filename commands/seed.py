@@ -6,6 +6,7 @@ from models.car import Car
 from models.customer_car import CustomerCar
 from models.service import Service
 from models.user import User, Role
+from models.order import Order
 from routers.auth import pwd_context
 
 with Session(engine) as session:
