@@ -72,5 +72,4 @@ def delete_car(
 
     db_car.deleted_at = str(datetime.now(timezone.utc)) + 'Z'
     session.commit()
-    session.refresh(db_car)
     return {"message": "Car deleted successfully"}

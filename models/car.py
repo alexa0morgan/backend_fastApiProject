@@ -14,6 +14,7 @@ class Car(CarBase, table=True):
     deleted_at: str | None = None
 
     brand: Brand | None = Relationship(back_populates="cars")
+    customer_cars: list["CustomerCar"] = Relationship(back_populates="car")
 
 
 class CarCreate(CarBase):
@@ -22,6 +23,7 @@ class CarCreate(CarBase):
 
 class CarResponse(CarBase):
     id: int
+    brand_id: int = Field(exclude=True)
     brand: BrandResponse | None = None
 
 

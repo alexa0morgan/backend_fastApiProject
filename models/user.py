@@ -1,7 +1,7 @@
 import enum
 
-from sqlmodel import Field, SQLModel, Enum, Column
 from pydantic import computed_field, BaseModel
+from sqlmodel import Field, SQLModel, Enum, Column, Relationship
 
 
 class Role(enum.Enum):
