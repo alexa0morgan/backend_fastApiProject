@@ -7,6 +7,7 @@ from routers.users import router as users_router
 from routers.brands import router as brands_router
 from routers.cars import router as cars_router
 from routers.customer_cars import router as customer_cars_router
+from routers.services import router as services_router
 
 app = FastAPI()
 
@@ -15,6 +16,7 @@ app.include_router(users_router, prefix="/users", tags=["users"])
 app.include_router(brands_router, prefix="/brands", tags=["brands"])
 app.include_router(cars_router, prefix="/cars", tags=["cars"])
 app.include_router(customer_cars_router, prefix="/customer_cars", tags=["customer_cars"])
+app.include_router(services_router, prefix="/services", tags=["services"])
 
 
 @app.on_event("startup")
