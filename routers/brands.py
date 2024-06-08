@@ -66,7 +66,7 @@ def update_brand(
     return db_brand
 
 
-@router.delete("/delete/{brand_id}", response_model=BrandResponse)
+@router.delete("/delete/{brand_id}")
 def delete_brand(
         session: CurrentSession,
         _: CurrentAdminUser,
