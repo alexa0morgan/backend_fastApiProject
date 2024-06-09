@@ -21,9 +21,12 @@ def create_user(
         _: CurrentAdminUser,
         user: UserCreate
 ):
-    hashed_password = pwd_context.hash(user.password)
-    extra_data = {"hashed_password": hashed_password}
-    db_user = User.model_validate(user, update=extra_data)
+    db_user = User.model_validate(
+        user,
+        update={
+            "hashed_password": pwd_context.hash(user.password)
+        }
+    )
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
