@@ -4,7 +4,7 @@ from pydantic import computed_field
 from sqlmodel import SQLModel, Field, Column, Enum, Relationship
 
 from models.customer_car import CustomerCar, CustomerCarResponseWithoutIds
-from models.service import Service
+from models.service import ServiceResponse
 from models.service_order import ServiceOrder
 from models.user import User, PartialUserResponse
 
@@ -55,7 +55,7 @@ class OrderResponse(OrderBase):
     employee_id: int = Field(exclude=True)
     customer_car_id: int = Field(exclude=True)
 
-    services: list["Service"] = Field(exclude=True)
+    services: list["ServiceResponse"]
 
     @computed_field(return_type=int)
     @property
