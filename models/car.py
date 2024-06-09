@@ -1,3 +1,4 @@
+from pydantic import computed_field
 from sqlmodel import Field, SQLModel, Relationship
 
 from models.brand import Brand, BrandResponse
@@ -25,6 +26,16 @@ class CarResponse(CarBase):
     id: int
     brand_id: int = Field(exclude=True)
     brand: BrandResponse | None = None
+
+
+class CarResponseWithoutIds(CarBase):
+    brand_id: int = Field(exclude=True)
+    brand: BrandResponse | None = Field(exclude=True)
+
+    @computed_field(return_type=str)
+    @property
+    def brand_name(self):
+        return self.brand.name
 
 
 class CarUpdate(CarBase):
