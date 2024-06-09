@@ -1,5 +1,7 @@
 from pydantic import BaseModel, computed_field
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
+
+from models.service_order import ServiceOrder
 
 
 class Price(BaseModel):
@@ -22,6 +24,8 @@ class ServiceBase(SQLModel):
 class Service(ServiceBase, table=True):
     id: int = Field(default=None, primary_key=True)
     deleted_at: str | None = None
+
+    orders: list["Order"] = Relationship(back_populates="services", link_model=ServiceOrder)
 
 
 class ServiceCreate(ServiceBase):
