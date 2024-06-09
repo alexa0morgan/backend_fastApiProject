@@ -4,9 +4,10 @@ from db import engine
 from models.brand import Brand
 from models.car import Car
 from models.customer_car import CustomerCar
+from models.order import Order
 from models.service import Service
 from models.user import User, Role
-from models.order import Order
+from models.service_order import ServiceOrder
 from routers.auth import pwd_context
 
 with Session(engine) as session:
@@ -20,6 +21,15 @@ with Session(engine) as session:
         hashed_password=pwd_context.hash("password"),
     ))
     session.add(User(
+        first_name="Jane",
+        last_name="Doe",
+        email="jadoe@example.com",
+        role_id=Role.admin,
+        send_notifications=True,
+        hashed_password=pwd_context.hash("password"),
+    ))
+
+    session.add(User(
         first_name="Alice",
         last_name="McDonald",
         email="amcdonald@example.com",
@@ -27,6 +37,15 @@ with Session(engine) as session:
         send_notifications=True,
         hashed_password=pwd_context.hash("password"),
     ))
+    session.add(User(
+        first_name="Alex",
+        last_name="Johnson",
+        email="ajonson@example.com",
+        role_id=Role.employee,
+        send_notifications=True,
+        hashed_password=pwd_context.hash("password"),
+    ))
+
     session.add(User(
         first_name="Bob",
         last_name="Brown",
@@ -98,30 +117,72 @@ with Session(engine) as session:
         license_plate="B456BB"
     ))
 
-    session.add(Service(
+    service1 = Service(
         name="Oil change",
-        minPrice=1000_00,
+        minPrice=2000_00,
         minTime=1800,
-    ))
-    session.add(Service(
+    )
+    session.add(service1)
+
+    service2 = Service(
         name="Tire replacement",
         minPrice=5000_00,
         minTime=3600,
-    ))
-    session.add(Service(
+    )
+    session.add(service2)
+
+    service3 = Service(
         name="Wheel alignment",
         minPrice=3000_00,
         minTime=2400,
-    ))
-    session.add(Service(
+    )
+    session.add(service3)
+
+    service4 = Service(
         name="Brake pad replacement",
         minPrice=7000_00,
         minTime=3600,
-    ))
-    session.add(Service(
-        name="Diagnostics",
-        minPrice=2000_00,
+    )
+    session.add(service4)
+
+    service5 = Service(
+        name="Battery replacement",
+        minPrice=4000_00,
         minTime=1800,
+    )
+    session.add(service5)
+
+    session.add(Order(
+        administrator_id=1,
+        employee_id=2,
+        customer_car_id=1,
+        services=[service1, service2, service3],
+        start_date="2021-10-01T12:00:00Z",
+        end_date="2021-10-01T15:00:00Z",
+    ))
+    session.add(Order(
+        administrator_id=1,
+        employee_id=2,
+        customer_car_id=2,
+        services=[service4, service5],
+        start_date="2021-10-01T12:00:00Z",
+        end_date="2021-10-01T15:00:00Z",
+    ))
+    session.add(Order(
+        administrator_id=1,
+        employee_id=2,
+        customer_car_id=1,
+        services=[service1, service2, service3],
+        start_date="2021-10-01T12:00:00Z",
+        end_date="2021-10-01T15:00:00Z",
+    ))
+    session.add(Order(
+        administrator_id=1,
+        employee_id=2,
+        customer_car_id=2,
+        services=[service4, service5],
+        start_date="2021-10-01T12:00:00Z",
+        end_date="2021-10-01T15:00:00Z",
     ))
 
     session.commit()
