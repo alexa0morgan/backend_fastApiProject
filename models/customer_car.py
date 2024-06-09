@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 
-from models.car import Car, CarResponse
+from models.car import Car, CarResponse, CarResponseWithoutIds
 from models.user import User, PartialUserResponse
 
 
@@ -28,8 +28,17 @@ class CustomerCarCreate(CustomerCarBase):
 
 class CustomerCarResponse(CustomerCarBase):
     id: int
+    customer_id: int = Field(exclude=True)
     customer: PartialUserResponse | None = None
     car: CarResponse | None = None
+
+
+class CustomerCarResponseWithoutIds(CustomerCarBase):
+    id: int
+    car_id: int = Field(exclude=True)
+    customer_id: int = Field(exclude=True)
+    customer: PartialUserResponse | None = None
+    car: CarResponseWithoutIds | None = None
 
 
 class CustomerCarUpdate(CustomerCarBase):
