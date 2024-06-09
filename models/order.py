@@ -1,6 +1,6 @@
 import enum
 
-from pydantic import computed_field
+from pydantic import computed_field, BaseModel
 from sqlmodel import SQLModel, Field, Column, Enum, Relationship
 
 from models.customer_car import CustomerCar, CustomerCarResponseWithoutIds
@@ -74,3 +74,7 @@ class OrderUpdate(OrderBase):
     administrator_id: int | None = None
     employee_id: int | None = None
     customer_car_id: int | None = None
+
+
+class OrderAddServices(BaseModel):
+    service_ids: list[int]
