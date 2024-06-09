@@ -1,13 +1,13 @@
 from datetime import datetime, UTC, timedelta
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
 from db import CurrentSession
 from models.customer_car import CustomerCar
-from models.order import Order, OrderCreate, OrderResponse
+from models.order import Order, OrderCreate, OrderResponse, OrderUpdate, Status
 from models.service import Service
-from models.user import Role
+from models.user import Role, User
 from routers.auth import CurrentAdminUser, CurrentUser
 
 router = APIRouter()
@@ -74,3 +74,60 @@ def read_orders(
             .offset(offset)
             .limit(limit)
         ).all()
+
+
+@router.patch("update/{order_id}", response_model=OrderResponse)
+def update_order(
+        session: CurrentSession,
+        _: CurrentAdminUser,
+        order_id: int,
+        order: OrderUpdate
+):
+    db_order = session.get(Order, order_id)
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    order_data = order.model_dump(exclude_unset=True)
+    db_order.sqlmodel_update(order_data)
+    session.add(db_order)
+    session.commit()
+    session.refresh(db_order)
+    return db_order
+
+
+@router.delete("delete/{order_id}")
+def delete_order(
+        session: CurrentSession,
+        _: CurrentAdminUser,
+        order_id: int
+):
+    db_order = session.get(Order, order_id)
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    db_order.deleted_at = datetime.now(UTC).isoformat()
+    session.commit()
+    return {"message": "Order deleted successfully"}
+
+
+@router.post("/toggle_status/{order_id}", response_model=OrderResponse)
+def complete_order(
+        session: CurrentSession,
+        _: CurrentAdminUser,
+        order_id: int
+):
+    db_order = session.get(Order, order_id)
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    if db_order.status == Status.completed:
+        db_order.status = Status.in_progress
+    else:
+        db_order.status = Status.completed
+        db_customer = session.get(User, db_order.customer_car.customer_id)
+        if db_customer.send_notifications:
+            print(f"\n\n\n\nSending notification to {db_customer.email}\n\n\n\n")
+
+    session.commit()
+    session.refresh(db_order)
+    return db_order

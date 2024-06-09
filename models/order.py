@@ -18,13 +18,13 @@ class OrderBase(SQLModel):
     administrator_id: int = Field(default=None, foreign_key="user.id")
     employee_id: int = Field(default=None, foreign_key="user.id")
     customer_car_id: int = Field(default=None, foreign_key="customer_car.id")
-    status: Status = Field(default=Status.in_progress, sa_column=Column(Enum(Status)))
 
 
 class Order(OrderBase, table=True):
     id: int = Field(default=None, primary_key=True)
     start_date: str
     end_date: str | None
+    status: Status = Field(default=Status.in_progress, sa_column=Column(Enum(Status)))
     deleted_at: str | None = None
 
     customer_car: CustomerCar | None = Relationship(back_populates="orders")
@@ -50,7 +50,7 @@ class OrderResponse(OrderBase):
     employee: PartialUserResponse | None = None
     start_date: str
     end_date: str | None
-
+    status: Status = Field(default=Status.in_progress, sa_column=Column(Enum(Status)))
     administrator_id: int = Field(exclude=True)
     employee_id: int = Field(exclude=True)
     customer_car_id: int = Field(exclude=True)
@@ -66,3 +66,11 @@ class OrderResponse(OrderBase):
     @property
     def total_time(self):
         return sum([service.minTime for service in self.services]) // 60
+
+
+class OrderUpdate(OrderBase):
+    end_date: str | None
+
+    administrator_id: int | None = None
+    employee_id: int | None = None
+    customer_car_id: int | None = None
