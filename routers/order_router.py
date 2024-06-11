@@ -1,6 +1,6 @@
 from datetime import datetime, UTC, timedelta
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 from sqlmodel import select
 
 from db import CurrentSession
@@ -110,7 +110,7 @@ def update_order(
 ):
     db_order = session.get(Order, order_id)
     if not db_order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
 
     order_data = order.model_dump(exclude_unset=True)
     db_order.sqlmodel_update(order_data)
@@ -128,7 +128,7 @@ def delete_order(
 ):
     db_order = session.get(Order, order_id)
     if not db_order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
 
     db_order.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
@@ -143,7 +143,7 @@ def complete_order(
 ):
     db_order = session.get(Order, order_id)
     if not db_order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
 
     if db_order.status == Status.completed:
         db_order.status = Status.in_progress
@@ -168,11 +168,12 @@ def add_service_to_order(
 ):
     db_order = session.get(Order, order_id)  # данные заказа
     if not db_order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
 
     for service in db_order.services:  # данные текущих услуг
         if service.id in new_services.service_ids:
-            raise HTTPException(status_code=422, detail=f"Service {service.name} already added to order")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                detail=f"Service {service.name} already added to order")
 
     services = session.exec(
         select(Service)
@@ -181,7 +182,7 @@ def add_service_to_order(
 
     for id in new_services.service_ids:
         if id not in [service.id for service in services]:
-            raise HTTPException(status_code=404, detail=f"Service with id={id} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Service with id={id} not found")
 
     db_order.services.extend(services)
     total_time = timedelta(seconds=sum([service.minTime for service in db_order.services]))

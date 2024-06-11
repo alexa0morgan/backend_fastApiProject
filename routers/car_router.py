@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 
 from db import CurrentSession
 from models.brand_model import Brand
@@ -64,7 +64,7 @@ def update_car(
 ):
     db_car = session.get(Car, car_id)
     if not db_car:
-        raise HTTPException(status_code=404, detail="Car not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Car not found")
 
     car_data = car.model_dump(exclude_unset=True)  # exclude_unset=True - исключает неустановленные значения
     db_car.sqlmodel_update(car_data)  # обновление значений
@@ -82,7 +82,7 @@ def delete_car(
 ):
     db_car = session.get(Car, car_id)
     if not db_car:
-        raise HTTPException(status_code=404, detail="Car not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Car not found")
 
     db_car.deleted_at = datetime.now(UTC).isoformat()
     session.commit()

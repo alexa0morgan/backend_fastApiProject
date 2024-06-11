@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 
 import services.brand_service as BrandService
 from db import CurrentSession
@@ -50,7 +50,7 @@ def update_brand(
 ):
     db_brand = session.get(Brand, brand_id)
     if not brand:
-        raise HTTPException(status_code=404, detail="Brand not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Brand not found")
 
     brand_data = brand.model_dump(exclude_unset=True)  # exclude_unset=True - исключает неустановленные значения
     db_brand.sqlmodel_update(brand_data)  # обновление значений
@@ -68,7 +68,7 @@ def delete_brand(
 ):
     db_brand = session.get(Brand, brand_id)
     if not db_brand:
-        raise HTTPException(status_code=404, detail="Brand not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Brand not found")
 
     db_brand.deleted_at = datetime.now(UTC).isoformat()
     session.commit()

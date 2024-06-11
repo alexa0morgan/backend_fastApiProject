@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 
 from db import CurrentSession
 from models.user_model import UserResponse, User, UserCreate, UserUpdate, UserQuery
@@ -78,7 +78,7 @@ def update_user(
 ):
     db_user = session.get(User, user_id)
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     user_data = user.model_dump(exclude_unset=True)
     if "password" in user_data:
         user_data["hashed_password"] = pwd_context.hash(user_data["password"])
@@ -98,7 +98,7 @@ def delete_user(
 ):
     db_user = session.get(User, user_id)
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     db_user.deleted_at = datetime.now(UTC).isoformat()
     session.commit()

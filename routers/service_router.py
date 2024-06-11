@@ -1,7 +1,6 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import select
+from fastapi import APIRouter, HTTPException, Depends, status
 
 from db import CurrentSession
 from models.service_model import ServiceResponse, ServiceCreate, Service, ServiceUpdate, ServiceQuery
@@ -67,7 +66,7 @@ def update_service(
 ):
     db_service = session.get(Service, service_id)
     if not db_service:
-        raise HTTPException(status_code=404, detail="Service not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
 
     service_data = service.model_dump(exclude_unset=True)
     db_service.sqlmodel_update(service_data)
@@ -85,7 +84,7 @@ def delete_service(
 ):
     db_service = session.get(Service, service_id)
     if not db_service:
-        raise HTTPException(status_code=404, detail="Service not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
 
     db_service.deleted_at = datetime.now(UTC).isoformat()
     session.commit()
