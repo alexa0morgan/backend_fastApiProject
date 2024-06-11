@@ -33,6 +33,5 @@ class BrandService(BaseService):
     def delete(self, brand_id: int):
         db_brand = self.get_one(Brand, brand_id)
 
-        db_brand.deleted_at = datetime.now(UTC).isoformat()
-        self.session.commit()
+        self.mark_deleted(db_brand)
         return {"message": "Brand deleted successfully"}

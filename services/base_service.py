@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 from typing import TypeVar, Type, Any, Sequence
 
 from fastapi import HTTPException, status
@@ -38,6 +39,10 @@ class BaseService:
             .offset(pagination_and_ordering.offset)
             .limit(pagination_and_ordering.limit)
         ).all()
+
+    def mark_deleted(self, db_obj: TModel):
+        db_obj.deleted_at = datetime.now(UTC).isoformat()
+        self.session.commit()
 
     def save_and_refresh(self, obj: TModel) -> TModel:
         self.session.add(obj)
