@@ -1,15 +1,53 @@
 from typing import TypeVar, Type, Any, Sequence
 
-from sqlmodel import SQLModel, Session, select
+from fastapi import HTTPException, status
+from sqlmodel import SQLModel, select
 
+from db import CurrentSession
 from models.base_models import Pagination, OrderBy
 
-TT = TypeVar("TT", bound=Type[SQLModel])
-T = TypeVar("T", bound=SQLModel)
+TTypeModel = TypeVar("TTypeModel", bound=Type[SQLModel])
+TModel = TypeVar("TModel", bound=SQLModel)
 
 
-def get_all(session: Session, cls: TT, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
-            joins: list[SQLModel] | None = None) -> Sequence[T]:
+class BaseService:
+
+    def __init__(self, session: CurrentSession):
+        self.session = session
+
+    def get_one(self, cls: TTypeModel, id: int):
+        db_obj = self.session.get(cls, id)
+
+        if not db_obj:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{cls.__name__} not found")
+
+        return db_obj
+
+    def get_all(self, cls: TTypeModel, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
+                joins: list | None = None) -> Sequence[TModel]:
+        query = select(cls)
+
+        if joins:
+            for join in joins:
+                query = query.join(join)
+
+        return self.session.exec(
+            query
+            .where(*options)
+            .order_by(pagination_and_ordering.get_order_by(cls))
+            .offset(pagination_and_ordering.offset)
+            .limit(pagination_and_ordering.limit)
+        ).all()
+
+    def save_and_refresh(self, obj: TModel) -> TModel:
+        self.session.add(obj)
+        self.session.commit()
+        self.session.refresh(obj)
+        return obj
+
+
+def get_all(session, cls: TTypeModel, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
+            joins: list | None = None) -> Sequence[TModel]:
     query = select(cls)
 
     if joins:
