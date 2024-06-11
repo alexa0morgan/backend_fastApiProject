@@ -1,11 +1,12 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, Query, HTTPException
-from sqlmodel import select
+from fastapi import APIRouter, HTTPException, Depends
 
 from db import CurrentSession
-from models.car import Car, CarCreate, CarResponse, CarUpdate
-from routers.auth import CurrentAdminUser
+from models.brand_model import Brand
+from models.car_model import Car, CarCreate, CarResponse, CarUpdate, CarQuery
+from routers.auth_router import CurrentAdminUser
+from services.base_service import get_all
 
 router = APIRouter()
 
@@ -27,18 +28,31 @@ def create_car(
 def read_cars(
         session: CurrentSession,
         _: CurrentAdminUser,
-        car_id: int = Query(None),
-        offset: int = Query(0),
-        limit: int = Query(default=5, le=100)
+        query: CarQuery = Depends()
 ):
-    return session.exec(
-        select(Car)
-        .where(Car.deleted_at == None)
-        .where(Car.id == car_id if car_id else True)
-        .order_by(Car.id)
-        .offset(offset)
-        .limit(limit)
-    ).all()
+    joins = set()
+    options = [Car.deleted_at == None]
+
+    if query.id:
+        options.append(Car.id == query.id)
+    if query.id_in:
+        options.append(Car.id.in_(query.id_in))
+    if query.model:
+        options.append(Car.model.ilike(f'%{query.model}%'))
+    if query.model_in:
+        options.append(Car.model.in_(query.model_in))
+    if query.brand_id:
+        options.append(Car.brand_id == query.brand_id)
+    if query.brand_id_in:
+        options.append(Car.brand_id.in_(query.brand_id_in))
+    if query.brand_name:
+        joins.add(Car.brand)
+        options.append(Brand.name.ilike(f'%{query.brand_name}%'))
+    if query.brand_name_in:
+        joins.add(Car.brand)
+        options.append(Brand.name.in_(query.brand_name_in))
+
+    return get_all(session, Car, options, query, list(joins))
 
 
 @router.patch("/update/{car_id}", response_model=CarResponse)

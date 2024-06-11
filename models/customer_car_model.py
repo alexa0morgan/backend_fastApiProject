@@ -1,7 +1,12 @@
+from dataclasses import dataclass
+from typing import Literal
+
+from fastapi import Query
 from sqlmodel import SQLModel, Field, Relationship
 
-from models.car import Car, CarResponse, CarResponseWithoutIds
-from models.user import User, PartialUserResponse
+from models.base_models import OrderBy, Pagination
+from models.car_model import Car, CarResponse, CarResponseWithoutIds
+from models.user_model import User, PartialUserResponse
 
 
 class CustomerCarBase(SQLModel):
@@ -46,3 +51,27 @@ class CustomerCarUpdate(CustomerCarBase):
     license_plate: str | None = None
     car_id: int | None = None
     customer_id: int | None = None
+
+
+@dataclass
+class CustomerCarQuery(Pagination, OrderBy):
+    order_field: Literal['id', 'year', 'license_plate'] = Query("id")
+
+    id: int | None = Query(None)
+    id_in: list[int] = Query(None)
+    car_id: int | None = Query(None)
+    car_id_in: list[int] = Query(None)
+    customer_id: int | None = Query(None)
+    customer_id_in: list[int] = Query(None)
+    year: int | None = Query(None)
+    year_gt: int | None = Query(None)
+    year_lt: int | None = Query(None)
+    year_in: list[int] = Query(None)
+    license_plate: str | None = Query(None)
+    license_plate_in: list[str] = Query(None)
+    customer_first_name: str | None = Query(None)
+    customer_first_name_in: list[str] = Query(None)
+    customer_last_name: str | None = Query(None)
+    customer_last_name_in: list[str] = Query(None)
+    car_model: str | None = Query(None)
+    car_model_in: list[str] = Query(None)

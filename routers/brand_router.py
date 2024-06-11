@@ -1,11 +1,12 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException, Query
-from sqlmodel import select
+from fastapi import APIRouter, HTTPException, Depends
 
+import services.brand_service as BrandService
 from db import CurrentSession
-from models.brand import Brand, BrandCreate, BrandResponse, BrandUpdate
-from routers.auth import CurrentAdminUser
+from models.brand_model import Brand, BrandCreate, BrandResponse, BrandUpdate, BrandQuery
+from routers.auth_router import CurrentAdminUser
+from services.base_service import get_all
 
 router = APIRouter()
 
@@ -16,35 +17,28 @@ def create_brand(
         _: CurrentAdminUser,
         brand: BrandCreate,
 ):
-    db_brand = Brand.model_validate(brand)
-    session.add(db_brand)
-    session.commit()
-    session.refresh(db_brand)
-    return db_brand
+    return BrandService.create_brand(session, brand)
 
 
 @router.get("/", response_model=list[BrandResponse])
 def read_brands(
         session: CurrentSession,
         _: CurrentAdminUser,
-        brand_id: int = Query(None),
-        brand_ids: list[int] = Query(None),
-        name: str = Query(None),
-        names: list[str] = Query(None),
-        offset: int = Query(0),
-        limit: int = Query(default=5, le=100)
+        query: BrandQuery = Depends()
+
 ):
-    return session.exec(
-        select(Brand)
-        .where(Brand.deleted_at == None)  # выборка только неудаленных записей
-        .where(Brand.id == brand_id if brand_id else True)
-        .where(Brand.id.in_(brand_ids) if brand_ids else True)
-        .where(Brand.name.like(f'%{name}%') if name else True)
-        .where(Brand.name.in_(names) if names else True)
-        .offset(offset)
-        .limit(limit)
-        .order_by(Brand.id)  # обратная сортировка Brand.id.desc()
-    ).all()
+    options = [Brand.deleted_at == None]
+
+    if query.id:
+        options.append(Brand.id == query.id)
+    if query.id_in:
+        options.append(Brand.id.in_(query.id_in))
+    if query.name:
+        options.append(Brand.name.ilike(f'%{query.name}%'))
+    if query.name_in:
+        options.append(Brand.name.in_(query.name_in))
+
+    return get_all(session, Brand, options, query)
 
 
 @router.patch("/update/{brand_id}", response_model=BrandResponse)

@@ -1,7 +1,12 @@
+from dataclasses import dataclass
+from typing import Literal
+
+from fastapi import Query
 from pydantic import BaseModel, computed_field
 from sqlmodel import SQLModel, Field, Relationship
 
-from models.service_order import ServiceOrder
+from models.base_models import OrderBy, Pagination
+from models.service_order_model import ServiceOrder
 
 
 class Price(BaseModel):
@@ -59,3 +64,21 @@ class ServiceUpdate(ServiceBase):
     name: str | None = None
     minPrice: int | None = None
     minTime: int | None = None
+
+
+@dataclass
+class ServiceQuery(Pagination, OrderBy):
+    order_field: Literal['id', 'name', 'minPrice', 'minTime'] = Query("id")
+
+    id: int | None = Query(None)
+    id_in: list[int] = Query(None)
+    name: str | None = Query(None)
+    name_in: list[str] = Query(None)
+    price: int | None = Query(None)
+    price_gt: int | None = Query(None)
+    price_lt: int | None = Query(None)
+    price_in: list[int] = Query(None)
+    time: int | None = Query(None)
+    time_gt: int | None = Query(None)
+    time_lt: int | None = Query(None)
+    time_in: list[int] = Query(None)

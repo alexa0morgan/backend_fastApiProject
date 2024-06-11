@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from db import engine
-from models.user import User, Role
+from models.user_model import User, Role
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

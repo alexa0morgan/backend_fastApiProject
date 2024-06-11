@@ -1,15 +1,19 @@
 import enum
+from dataclasses import dataclass
+from typing import Literal
 
+from fastapi import Query
 from pydantic import computed_field, BaseModel
 from sqlmodel import SQLModel, Field, Column, Enum, Relationship
 
-from models.customer_car import CustomerCar, CustomerCarResponseWithoutIds
-from models.service import ServiceResponse
-from models.service_order import ServiceOrder
-from models.user import User, PartialUserResponse
+from models.base_models import OrderBy, Pagination
+from models.customer_car_model import CustomerCar, CustomerCarResponseWithoutIds
+from models.service_model import ServiceResponse
+from models.service_order_model import ServiceOrder
+from models.user_model import User, PartialUserResponse
 
 
-class Status(enum.Enum):
+class Status(int, enum.Enum):
     in_progress = 1
     completed = 2
 
@@ -78,3 +82,28 @@ class OrderUpdate(OrderBase):
 
 class OrderAddServices(BaseModel):
     service_ids: list[int]
+
+
+@dataclass
+class OrderQuery(Pagination, OrderBy):
+    order_field: Literal['id', 'start_date', 'end_date', 'status'] = Query("id")
+
+    id: int | None = Query(None)
+    id_in: list[int] = Query(None)
+    customer_car_id: int | None = Query(None)
+    customer_car_id_in: list[int] = Query(None)
+    customer_car_year: int | None = Query(None)
+    customer_car_year_gt: int | None = Query(None)
+    customer_car_year_lt: int | None = Query(None)
+    customer_car_license_plate: str | None = Query(None)
+    customer_id: int | None = Query(None)
+    customer_id_in: list[int] = Query(None)
+    administrator_id: int | None = Query(None)
+    administrator_id_in: list[int] = Query(None)
+    employee_id: int | None = Query(None)
+    employee_id_in: list[int] = Query(None)
+    status: Status = Query(None)
+    start_date_gte: str | None = Query(None)
+    start_date_lte: str | None = Query(None)
+    end_date_gte: str | None = Query(None)
+    end_date_lte: str | None = Query(None)

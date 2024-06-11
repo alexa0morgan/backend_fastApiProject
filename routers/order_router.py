@@ -1,14 +1,15 @@
 from datetime import datetime, UTC, timedelta
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
 from db import CurrentSession
-from models.customer_car import CustomerCar
-from models.order import Order, OrderCreate, OrderResponse, OrderUpdate, Status, OrderAddServices
-from models.service import Service
-from models.user import Role, User
-from routers.auth import CurrentAdminUser, CurrentUser
+from models.customer_car_model import CustomerCar
+from models.order_model import Order, OrderCreate, OrderResponse, OrderUpdate, Status, OrderAddServices, OrderQuery
+from models.service_model import Service
+from models.user_model import Role, User
+from routers.auth_router import CurrentAdminUser, CurrentUser
+from services.base_service import get_all
 
 router = APIRouter()
 
@@ -39,41 +40,65 @@ def create_order(
 def read_orders(
         session: CurrentSession,
         current_user: CurrentUser,
-        order_id: int = None,
-        offset: int = 0,
-        limit: int = 5
+        query: OrderQuery = Depends()
 
 ):
-    if current_user.role_id == Role.admin:
-        return session.exec(
-            select(Order)
-            .where(Order.deleted_at == None)
-            .where(Order.id == order_id if order_id else True)
-            .order_by(Order.id)
-            .offset(offset)
-            .limit(limit)
-        ).all()
+    joins = set()
+
+    options = [Order.deleted_at == None]
+
+    if query.id:
+        options.append(Order.id == query.id)
+    if query.id_in:
+        options.append(Order.id.in_(query.id_in))
+    if query.customer_car_id:
+        options.append(Order.customer_car_id == query.customer_car_id)
+    if query.customer_car_id_in:
+        options.append(Order.customer_car_id.in_(query.customer_car_id_in))
+    if query.customer_car_year:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.year == query.customer_car_year)
+    if query.customer_car_year_gt:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.year > query.customer_car_year_gt)
+    if query.customer_car_year_lt:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.year < query.customer_car_year_lt)
+    if query.customer_car_license_plate:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.license_plate.ilike(f'%{query.customer_car_license_plate}%'))
+    if query.customer_id:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.customer_id == query.customer_id)
+    if query.customer_id_in:
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.customer_id.in_(query.customer_id_in))
+    if query.administrator_id:
+        options.append(Order.administrator_id == query.administrator_id)
+    if query.administrator_id_in:
+        options.append(Order.administrator_id.in_(query.administrator_id_in))
+    if query.employee_id:
+        options.append(Order.employee_id == query.employee_id)
+    if query.employee_id_in:
+        options.append(Order.employee_id.in_(query.employee_id_in))
+    if query.status:
+        options.append(Order.status == query.status)
+    if query.start_date_gte:
+        options.append(Order.start_date >= query.start_date_gte)
+    if query.start_date_lte:
+        options.append(Order.start_date <= query.start_date_lte)
+    if query.end_date_gte:
+        options.append(Order.end_date >= query.end_date_gte)
+    if query.end_date_lte:
+        options.append(Order.end_date <= query.end_date_lte)
+
     if current_user.role_id == Role.employee:
-        return session.exec(
-            select(Order)
-            .where(Order.deleted_at == None)
-            .where(Order.employee_id == current_user.id)
-            .where(Order.id == order_id if order_id else True)
-            .order_by(Order.id)
-            .offset(offset)
-            .limit(limit)
-        ).all()
+        options.append(Order.employee_id == current_user.id)
     if current_user.role_id == Role.client:
-        return session.exec(
-            select(Order)
-            .join(Order.customer_car)
-            .where(Order.deleted_at == None)
-            .where(CustomerCar.customer_id == current_user.id)
-            .where(Order.id == order_id if order_id else True)
-            .order_by(Order.id)
-            .offset(offset)
-            .limit(limit)
-        ).all()
+        joins.add(Order.customer_car)
+        options.append(CustomerCar.customer_id == current_user.id)
+
+    return get_all(session, Order, options, query, list(joins))
 
 
 @router.patch("/update/{order_id}", response_model=OrderResponse)

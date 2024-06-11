@@ -1,7 +1,12 @@
+from dataclasses import dataclass
+from typing import Literal
+
+from fastapi import Query
 from pydantic import computed_field
 from sqlmodel import Field, SQLModel, Relationship
 
-from models.brand import Brand, BrandResponse
+from models.base_models import OrderBy, Pagination
+from models.brand_model import Brand, BrandResponse
 
 
 class CarBase(SQLModel):
@@ -41,3 +46,17 @@ class CarResponseWithoutIds(CarBase):
 class CarUpdate(CarBase):
     model: str | None = None
     brand_id: int | None = None
+
+
+@dataclass
+class CarQuery(Pagination, OrderBy):
+    order_field: Literal['id', 'model', 'brand_id'] = Query("id")
+
+    id: int | None = Query(None)
+    id_in: list[int] = Query(None)
+    model: str | None = Query(None)
+    model_in: list[str] = Query(None)
+    brand_id: int | None = Query(None)
+    brand_id_in: list[int] = Query(None)
+    brand_name: str | None = Query(None)
+    brand_name_in: list[str] = Query(None)

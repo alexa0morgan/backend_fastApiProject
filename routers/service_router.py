@@ -1,11 +1,12 @@
 from datetime import datetime, UTC
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
 from db import CurrentSession
-from models.service import ServiceResponse, ServiceCreate, Service, ServiceUpdate
-from routers.auth import CurrentAdminUser
+from models.service_model import ServiceResponse, ServiceCreate, Service, ServiceUpdate, ServiceQuery
+from routers.auth_router import CurrentAdminUser
+from services.base_service import get_all
 
 router = APIRouter()
 
@@ -27,18 +28,34 @@ def create_service(
 def read_services(
         session: CurrentSession,
         _: CurrentAdminUser,
-        service_id: int = None,
-        offset: int = 0,
-        limit: int = 5
+        query: ServiceQuery = Depends(),
 ):
-    return session.exec(
-        select(Service)
-        .where(Service.deleted_at == None)
-        .where(Service.id == service_id if service_id else True)
-        .order_by(Service.id)
-        .offset(offset)
-        .limit(limit)
-    ).all()
+    options = [Service.deleted_at == None]
+
+    if query.id:
+        options.append(Service.id == query.id)
+    if query.id_in:
+        options.append(Service.id.in_(query.id_in))
+    if query.name:
+        options.append(Service.name.ilike(f'%{query.name}%'))
+    if query.price:
+        options.append(Service.minPrice == query.price)
+    if query.price_gt:
+        options.append(Service.minPrice > query.price_gt)
+    if query.price_lt:
+        options.append(Service.minPrice < query.price_lt)
+    if query.price_in:
+        options.append(Service.minPrice.in_(query.price_in))
+    if query.time:
+        options.append(Service.minTime == query.time)
+    if query.time_gt:
+        options.append(Service.minTime > query.time_gt)
+    if query.time_lt:
+        options.append(Service.minTime < query.time_lt)
+    if query.time_in:
+        options.append(Service.minTime.in_(query.time_in))
+
+    return get_all(session, Service, options, query)
 
 
 @router.patch("/update/{service_id}", response_model=ServiceResponse)

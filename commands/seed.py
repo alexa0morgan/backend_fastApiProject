@@ -1,14 +1,14 @@
 from sqlmodel import Session
 
 from db import engine
-from models.brand import Brand
-from models.car import Car
-from models.customer_car import CustomerCar
-from models.order import Order
-from models.service import Service
-from models.user import User, Role
-from models.service_order import ServiceOrder
-from routers.auth import pwd_context
+from models.brand_model import Brand
+from models.car_model import Car
+from models.customer_car_model import CustomerCar
+from models.order_model import Order
+from models.service_model import Service
+from models.user_model import User, Role
+from models.service_order_model import ServiceOrder
+from routers.auth_router import pwd_context
 
 with Session(engine) as session:
     session.add(User(
@@ -166,7 +166,7 @@ with Session(engine) as session:
         customer_car_id=2,
         services=[service4, service5],
         start_date="2021-10-01T12:00:00Z",
-        end_date="2021-10-01T15:00:00Z",
+        end_date="2021-10-01T13:30:00Z",
     ))
     session.add(Order(
         administrator_id=1,
@@ -174,7 +174,7 @@ with Session(engine) as session:
         customer_car_id=1,
         services=[service1, service2, service3],
         start_date="2021-10-01T12:00:00Z",
-        end_date="2021-10-01T15:00:00Z",
+        end_date="2021-10-01T14:10:00Z",
     ))
     session.add(Order(
         administrator_id=1,
@@ -182,7 +182,7 @@ with Session(engine) as session:
         customer_car_id=2,
         services=[service4, service5],
         start_date="2021-10-01T12:00:00Z",
-        end_date="2021-10-01T15:00:00Z",
+        end_date="2021-10-01T13:30:00Z",
     ))
 
     session.commit()

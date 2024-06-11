@@ -1,4 +1,10 @@
+from dataclasses import dataclass
+from typing import Literal
+
+from fastapi import Query
 from sqlmodel import Field, SQLModel, Relationship
+
+from models.base_models import OrderBy, Pagination
 
 
 class BrandBase(SQLModel):
@@ -22,3 +28,13 @@ class BrandResponse(BrandBase):
 
 class BrandUpdate(BrandBase):
     name: str | None = None
+
+
+@dataclass
+class BrandQuery(Pagination, OrderBy):
+    order_field: Literal['id', 'name'] = Query('id')
+
+    id: int | None = Query(None)
+    id_in: list[int] = Query(None)
+    name: str | None = Query(None)
+    name_in: list[str] = Query(None)

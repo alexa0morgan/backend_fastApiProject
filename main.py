@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from sqlmodel import SQLModel
 
 from db import engine
-from routers.auth import router as auth_router
-from routers.users import router as users_router
-from routers.brands import router as brands_router
-from routers.cars import router as cars_router
-from routers.customer_cars import router as customer_cars_router
-from routers.services import router as services_router
-from routers.orders import router as orders_router
+from routers.auth_router import router as auth_router
+from routers.user_router import router as users_router
+from routers.brand_router import router as brands_router
+from routers.car_router import router as cars_router
+from routers.customer_car_router import router as customer_cars_router
+from routers.service_router import router as services_router
+from routers.order_router import router as orders_router
 
 app = FastAPI()
 
