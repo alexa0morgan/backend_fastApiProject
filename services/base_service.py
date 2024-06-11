@@ -12,6 +12,7 @@ TModel = TypeVar("TModel", bound=SQLModel)
 
 
 class BaseService:
+    cls: TTypeModel
 
     def __init__(self, session: CurrentSession):
         self.session = session
@@ -50,21 +51,21 @@ class BaseService:
         self.session.refresh(obj)
         return obj
 
-    def create(self, cls: TTypeModel, create_data) -> TTypeModel:
-        db_obj = cls.model_validate(create_data)
+    def create(self, create_data) -> TTypeModel:
+        db_obj = self.cls.model_validate(create_data)
         return self.save_and_refresh(db_obj)
 
-    def update(self, cls: TTypeModel, id: int, update_data):
-        db_obj = self.get_one(cls, id)
+    def update(self, id: int, update_data):
+        db_obj = self.get_one(self.cls, id)
         obj_data = update_data.model_dump(exclude_unset=True)
         db_obj.sqlmodel_update(obj_data)
         return self.save_and_refresh(db_obj)
 
-    def delete(self, cls: TTypeModel, id: int):
-        db_obj = self.get_one(cls, id)
+    def delete(self, id: int):
+        db_obj = self.get_one(self.cls, id)
 
         self.mark_deleted(db_obj)
-        return {"message": f"{cls.__name__} deleted successfully"}
+        return {"message": f"{self.cls.__name__} deleted successfully"}
 
 
 def get_all(session, cls: TTypeModel, options: list[Any], pagination_and_ordering: Pagination | OrderBy,

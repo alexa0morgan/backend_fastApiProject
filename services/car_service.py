@@ -4,6 +4,7 @@ from services.base_service import BaseService
 
 
 class CarService(BaseService):
+    cls = Car
 
     def read(self, query: CarQuery):
 

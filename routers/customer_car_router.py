@@ -15,7 +15,7 @@ def create_customer_car(
         customer_car: CustomerCarCreate,
         customer_car_service: CustomerCarService = Depends()
 ):
-    return customer_car_service.create(CustomerCar, customer_car)
+    return customer_car_service.create(customer_car)
 
 
 @router.get("/", response_model=list[CustomerCarResponse])
@@ -36,7 +36,7 @@ def update_customer_car(
         customer_car_service: CustomerCarService = Depends()
 
 ):
-    return customer_car_service.update(CustomerCar, customer_car_id, customer_car)
+    return customer_car_service.update(customer_car_id, customer_car)
 
 
 @router.delete("/delete/{customer_car_id}")
@@ -46,4 +46,4 @@ def delete_customer_car(
         customer_car_service: CustomerCarService = Depends()
 
 ):
-    return customer_car_service.delete(CustomerCar, customer_car_id)
+    return customer_car_service.delete(customer_car_id)

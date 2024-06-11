@@ -5,6 +5,7 @@ from services.base_service import BaseService
 
 
 class CustomerCarService(BaseService):
+    cls = CustomerCar
 
     def read(self, query: CustomerCarQuery):
         joins = set()

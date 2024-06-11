@@ -3,6 +3,7 @@ from services.base_service import BaseService
 
 
 class BrandService(BaseService):
+    cls = Brand
 
     def read(self, query: BrandQuery):
         options = [Brand.deleted_at == None]
