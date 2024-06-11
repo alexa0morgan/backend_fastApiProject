@@ -1,13 +1,9 @@
 from models.brand_model import Brand
-from models.car_model import Car, CarCreate, CarQuery, CarUpdate
+from models.car_model import Car, CarQuery
 from services.base_service import BaseService
 
 
 class CarService(BaseService):
-
-    def create(self, car: CarCreate) -> Car:
-        db_car = Car.model_validate(car)
-        return self.save_and_refresh(db_car)
 
     def read(self, query: CarQuery):
 
@@ -35,15 +31,3 @@ class CarService(BaseService):
             options.append(Brand.name.in_(query.brand_name_in))
 
         return self.get_all(Car, options, query, list(joins))
-
-    def update(self, car_id: int, car: CarUpdate):
-        db_car = self.get_one(Car, car_id)
-        car_data = car.model_dump(exclude_unset=True)  # exclude_unset=True - исключает неустановленные значения
-        db_car.sqlmodel_update(car_data)
-        return self.save_and_refresh(db_car)
-
-    def delete(self, car_id: int):
-        db_car = self.get_one(Car, car_id)
-
-        self.mark_deleted(db_car)
-        return {"message": "Car deleted successfully"}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from models.car_model import CarCreate, CarResponse, CarUpdate, CarQuery
+from models.car_model import CarCreate, CarResponse, CarUpdate, CarQuery, Car
 from routers.auth_router import CurrentAdminUser
 from services.car_service import CarService
 
@@ -13,7 +13,7 @@ def create_car(
         car: CarCreate,
         car_service: CarService = Depends()
 ):
-    return car_service.create(car)
+    return car_service.create(Car, car)
 
 
 @router.get("/", response_model=list[CarResponse])
@@ -32,7 +32,7 @@ def update_car(
         car: CarUpdate,
         car_service: CarService = Depends()
 ):
-    return car_service.update(car_id, car)
+    return car_service.update(Car, car_id, car)
 
 
 @router.delete("/delete/{car_id}")
@@ -41,4 +41,4 @@ def delete_car(
         car_id: int,
         car_service: CarService = Depends()
 ):
-    return car_service.delete(car_id)
+    return car_service.delete(Car, car_id)

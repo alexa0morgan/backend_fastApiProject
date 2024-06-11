@@ -50,6 +50,22 @@ class BaseService:
         self.session.refresh(obj)
         return obj
 
+    def create(self, cls: TTypeModel, create_data) -> TTypeModel:
+        db_obj = cls.model_validate(create_data)
+        return self.save_and_refresh(db_obj)
+
+    def update(self, cls: TTypeModel, id: int, update_data):
+        db_obj = self.get_one(cls, id)
+        obj_data = update_data.model_dump(exclude_unset=True)
+        db_obj.sqlmodel_update(obj_data)
+        return self.save_and_refresh(db_obj)
+
+    def delete(self, cls: TTypeModel, id: int):
+        db_obj = self.get_one(cls, id)
+
+        self.mark_deleted(db_obj)
+        return {"message": f"{cls.__name__} deleted successfully"}
+
 
 def get_all(session, cls: TTypeModel, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
             joins: list | None = None) -> Sequence[TModel]:

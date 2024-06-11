@@ -1,14 +1,8 @@
-from datetime import datetime, UTC
-
-from models.brand_model import Brand, BrandCreate, BrandQuery, BrandUpdate
+from models.brand_model import Brand, BrandQuery
 from services.base_service import BaseService
 
 
 class BrandService(BaseService):
-
-    def create(self, brand: BrandCreate) -> Brand:
-        db_brand = Brand.model_validate(brand)
-        return self.save_and_refresh(db_brand)
 
     def read(self, query: BrandQuery):
         options = [Brand.deleted_at == None]
@@ -23,15 +17,3 @@ class BrandService(BaseService):
             options.append(Brand.name.in_(query.name_in))
 
         return self.get_all(Brand, options, query)
-
-    def update(self, brand_id: int, brand: BrandUpdate) -> Brand:
-        db_brand = self.get_one(Brand, brand_id)
-        brand_data = brand.model_dump(exclude_unset=True)  # exclude_unset=True - исключает неустановленные значения
-        db_brand.sqlmodel_update(brand_data)
-        return self.save_and_refresh(db_brand)
-
-    def delete(self, brand_id: int):
-        db_brand = self.get_one(Brand, brand_id)
-
-        self.mark_deleted(db_brand)
-        return {"message": "Brand deleted successfully"}
