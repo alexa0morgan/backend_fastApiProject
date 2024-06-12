@@ -1,3 +1,6 @@
+from fastapi import HTTPException, status
+from sqlmodel import select
+
 from models.user_model import User, UserCreate, UserQuery
 from services.auth_service import AuthService
 from services.base_service import BaseService
@@ -6,7 +9,16 @@ from services.base_service import BaseService
 class UserService(BaseService):
     cls = User
 
+    def email_exists(self, email: str) -> bool:
+        return self.session.exec(select(User).where(User.email == email)).first() is not None
+
     def create(self, user: UserCreate) -> User:
+        if self.email_exists(user.email):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"User with this email already exists"
+            )
+
         db_user = User.model_validate(
             user,
             update={
