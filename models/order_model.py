@@ -73,7 +73,7 @@ class OrderResponse(OrderBase):
 
 
 class OrderUpdate(OrderBase):
-    end_date: str | None
+    end_date: str | None = None
 
     administrator_id: int | None = None
     employee_id: int | None = None
