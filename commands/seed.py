@@ -8,7 +8,7 @@ from models.order_model import Order
 from models.service_model import Service
 from models.user_model import User, Role
 from models.service_order_model import ServiceOrder
-from services.auth_service import pwd_context
+from services.auth_service import AuthService
 
 with Session(engine) as session:
     session.add(User(
@@ -18,7 +18,7 @@ with Session(engine) as session:
         email="jdoe@example.com",
         role_id=Role.admin,
         send_notifications=True,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
     ))
     session.add(User(
         first_name="Jane",
@@ -26,7 +26,7 @@ with Session(engine) as session:
         email="jadoe@example.com",
         role_id=Role.admin,
         send_notifications=True,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
     ))
 
     session.add(User(
@@ -35,7 +35,7 @@ with Session(engine) as session:
         email="amcdonald@example.com",
         role_id=Role.employee,
         send_notifications=True,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
     ))
     session.add(User(
         first_name="Alex",
@@ -43,7 +43,7 @@ with Session(engine) as session:
         email="ajonson@example.com",
         role_id=Role.employee,
         send_notifications=True,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
     ))
 
     session.add(User(
@@ -52,14 +52,14 @@ with Session(engine) as session:
         email="bbrown@example.net",
         role_id=Role.client,
         send_notifications=False,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
     ))
     session.add(User(
         email="cust@example.com",
         first_name="Customer2",
         last_name="User",
         role_id=Role.client,
-        hashed_password=pwd_context.hash("password"),
+        hashed_password=AuthService.hash_password("password"),
         send_notifications=True
     ))
 

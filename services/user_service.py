@@ -1,5 +1,5 @@
 from models.user_model import User, UserCreate, UserQuery
-from services.auth_service import pwd_context
+from services.auth_service import AuthService
 from services.base_service import BaseService
 
 
@@ -10,7 +10,7 @@ class UserService(BaseService):
         db_user = User.model_validate(
             user,
             update={
-                "hashed_password": pwd_context.hash(user.password)
+                "hashed_password": AuthService.hash_password(user.password)
             }
         )
         return self.save_and_refresh(db_user)
@@ -49,7 +49,7 @@ class UserService(BaseService):
         db_user = self.get_one(User, user_id)
         user_data = user.model_dump(exclude_unset=True)
         if "password" in user_data:
-            user_data["hashed_password"] = pwd_context.hash(user_data["password"])
+            user_data["hashed_password"] = AuthService.hash_password(user_data["password"])
             del user_data["password"]
         db_user.sqlmodel_update(user_data)
         return self.save_and_refresh(db_user)
