@@ -12,13 +12,17 @@ from db import CurrentSession
 from models.auth_model import TokenData, Token
 from models.user_model import User, Role
 from services.base_service import BaseService
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 _oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-_SECRET_KEY = "97bcf47e14474a6fab00cda51846e7d0fa2da14f653846699165981341222248"
-_ALGORITHM = "HS256"
-_ACCESS_TOKEN_EXPIRE_MINUTES = 30
+_SECRET_KEY = os.getenv("SECRET_KEY")
+_ALGORITHM = os.getenv("ALGORITHM")
+_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 
 class AuthService(BaseService):
