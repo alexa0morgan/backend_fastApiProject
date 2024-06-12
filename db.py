@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 from sqlmodel import Session, create_engine
+import os
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+sqlite_url = os.getenv("DATABASE_URL")
 
 engine = create_engine(sqlite_url, echo=True)
 

@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta, datetime, UTC
 from typing import Annotated
 
@@ -12,10 +13,6 @@ from db import CurrentSession
 from models.auth_model import TokenData, Token
 from models.user_model import User, Role
 from services.base_service import BaseService
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 _oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
