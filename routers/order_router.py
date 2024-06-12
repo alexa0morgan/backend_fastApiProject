@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from models.order_model import OrderCreate, OrderResponse, OrderUpdate, OrderAddServices, OrderQuery
-from routers.auth_router import CurrentAdminUser, CurrentUser
+from services.auth_service import AuthService
 from services.order_service import OrderService
 
 router = APIRouter()
@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=OrderResponse)
 def create_order(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         order: OrderCreate,
         order_service: OrderService = Depends()
 ):
@@ -18,7 +18,7 @@ def create_order(
 
 @router.get("/", response_model=list[OrderResponse])
 def read_orders(
-        current_user: CurrentUser,
+        current_user: AuthService.CurrentUser,
         query: OrderQuery = Depends(),
         order_service: OrderService = Depends()
 ):
@@ -27,7 +27,7 @@ def read_orders(
 
 @router.patch("/update/{order_id}", response_model=OrderResponse)
 def update_order(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         order_id: int,
         order: OrderUpdate,
         order_service: OrderService = Depends()
@@ -37,7 +37,7 @@ def update_order(
 
 @router.delete("/delete/{order_id}")
 def delete_order(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         order_id: int,
         order_service: OrderService = Depends()
 ):
@@ -46,7 +46,7 @@ def delete_order(
 
 @router.post("/toggle_status/{order_id}", response_model=OrderResponse)
 def complete_order(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         order_id: int,
         order_service: OrderService = Depends()
 
@@ -56,7 +56,7 @@ def complete_order(
 
 @router.post("/add_service/{order_id}", response_model=OrderResponse)
 def add_services_to_order(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         order_id: int,
         new_services: OrderAddServices,  # id новых услуг
         order_service: OrderService = Depends()

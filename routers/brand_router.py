@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from models.brand_model import BrandCreate, BrandResponse, BrandUpdate, BrandQuery
-from routers.auth_router import CurrentAdminUser
+from services.auth_service import AuthService
 from services.brand_service import BrandService
 
 router = APIRouter()
@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=BrandResponse)
 def create_brand(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         brand: BrandCreate,
         brand_service: BrandService = Depends()
 ):
@@ -18,7 +18,7 @@ def create_brand(
 
 @router.get("/", response_model=list[BrandResponse])
 def read_brands(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         query: BrandQuery = Depends(),
         brand_service: BrandService = Depends()
 ):
@@ -27,7 +27,7 @@ def read_brands(
 
 @router.patch("/update/{brand_id}", response_model=BrandResponse)
 def update_brand(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         brand_id: int,
         brand: BrandUpdate,
         brand_service: BrandService = Depends()
@@ -37,7 +37,7 @@ def update_brand(
 
 @router.delete("/delete/{brand_id}")
 def delete_brand(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         brand_id: int,
         brand_service: BrandService = Depends()
 ):

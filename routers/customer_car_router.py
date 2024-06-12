@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from db import CurrentSession
-from models.customer_car_model import CustomerCarCreate, CustomerCar, CustomerCarResponse, CustomerCarUpdate, \
+from models.customer_car_model import CustomerCarCreate, CustomerCarResponse, CustomerCarUpdate, \
     CustomerCarQuery
-from routers.auth_router import CurrentAdminUser
+from services.auth_service import AuthService
 from services.customer_car_service import CustomerCarService
 
 router = APIRouter()
@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=CustomerCarResponse)
 def create_customer_car(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         customer_car: CustomerCarCreate,
         customer_car_service: CustomerCarService = Depends()
 ):
@@ -21,7 +21,7 @@ def create_customer_car(
 @router.get("/", response_model=list[CustomerCarResponse])
 def read_customer_cars(
         session: CurrentSession,
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         query: CustomerCarQuery = Depends(),
         customer_car_service: CustomerCarService = Depends()
 ):
@@ -30,7 +30,7 @@ def read_customer_cars(
 
 @router.patch("/update/{customer_car_id}", response_model=CustomerCarResponse)
 def update_customer_car(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         customer_car_id: int,
         customer_car: CustomerCarUpdate,
         customer_car_service: CustomerCarService = Depends()
@@ -41,7 +41,7 @@ def update_customer_car(
 
 @router.delete("/delete/{customer_car_id}")
 def delete_customer_car(
-        _: CurrentAdminUser,
+        _: AuthService.CurrentAdminUser,
         customer_car_id: int,
         customer_car_service: CustomerCarService = Depends()
 
