@@ -4,6 +4,7 @@ from services.base_service import BaseService
 
 class ServiceService(BaseService):
     cls = Service
+
     def read(self, query: ServiceQuery):
         options = [Service.deleted_at == None]
 

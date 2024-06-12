@@ -8,7 +8,7 @@ from models.order_model import Order
 from models.service_model import Service
 from models.user_model import User, Role
 from models.service_order_model import ServiceOrder
-from routers.auth_router import pwd_context
+from services.auth_service import pwd_context
 
 with Session(engine) as session:
     session.add(User(
