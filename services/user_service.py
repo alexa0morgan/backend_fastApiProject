@@ -55,10 +55,10 @@ class UserService(BaseService):
         if query.patronymic_in:
             options.append(User.patronymic.in_(query.patronymic_in))
 
-        return self.get_all(User, options, query)
+        return self.get_all(options, query)
 
     def update(self, user_id: int, user):
-        db_user = self.get_one(User, user_id)
+        db_user = self.get_one(user_id)
         user_data = user.model_dump(exclude_unset=True)
         if "password" in user_data:
             user_data["hashed_password"] = AuthService.hash_password(user_data["password"])

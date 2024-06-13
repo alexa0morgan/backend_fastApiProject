@@ -7,7 +7,7 @@ from models.customer_car_model import CustomerCar
 from models.order_model import Order
 from models.service_model import Service
 from models.user_model import User, Role
-from models.service_order_model import ServiceOrder
+from models.service_order_model import ServiceOrder  # noqa
 from services.auth_service import AuthService
 
 with Session(engine) as session:

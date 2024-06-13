@@ -55,4 +55,4 @@ class CustomerCarService(BaseService):
             joins.add(CustomerCar.car)
             options.append(Car.model.in_(query.car_model_in))
 
-        return self.get_all(CustomerCar, options, query, list(joins))
+        return self.get_all(options, query, list(joins))
