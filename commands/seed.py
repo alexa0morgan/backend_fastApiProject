@@ -63,6 +63,34 @@ with Session(engine) as session:
         send_notifications=True
     ))
 
+    session.add(User(
+        email="deleted1@example.com",
+        first_name="Deleted1",
+        last_name="User",
+        role_id=Role.client,
+        hashed_password=AuthService.hash_password("password"),
+        send_notifications=True,
+        deleted_at="2021-10-01T12:00:00Z"
+    ))
+    session.add(User(
+        email="deleted2@example.com",
+        first_name="Deleted2",
+        last_name="User",
+        role_id=Role.employee,
+        hashed_password=AuthService.hash_password("password"),
+        send_notifications=True,
+        deleted_at="2021-10-01T12:00:00Z"
+    ))
+    session.add(User(
+        email="deleted3@example.com",
+        first_name="Deleted3",
+        last_name="User",
+        role_id=Role.admin,
+        hashed_password=AuthService.hash_password("password"),
+        send_notifications=True,
+        deleted_at="2021-10-01T12:00:00Z"
+    ))
+
     session.add(Brand(name="Pagani"))
     session.add(Brand(name="Ferrari"))
     session.add(Brand(name="Lamborghini"))
@@ -106,13 +134,13 @@ with Session(engine) as session:
 
     session.add(CustomerCar(
         car_id=1,
-        customer_id=3,
+        customer_id=5,
         year=2010,
         license_plate="A123AA"
     ))
     session.add(CustomerCar(
         car_id=3,
-        customer_id=4,
+        customer_id=6,
         year=2020,
         license_plate="B456BB"
     ))
