@@ -22,7 +22,7 @@ def read_services(
         query: ServiceQuery = Depends(),
         service_service: ServiceService = Depends()
 ):
-    service_service.read(query)
+    return service_service.read(query)
 
 
 @router.patch("/update/{service_id}", response_model=ServiceResponse)
