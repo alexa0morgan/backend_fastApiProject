@@ -28,10 +28,10 @@ class AuthService(BaseService):
             select(User)
             .where(User.email == username)
         ).first()
-        if user.deleted_at:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found or deleted")
         if not user:
             return False
+        if user.deleted_at:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found or deleted")
         if not AuthService.verify_password(password, user.hashed_password):
             return False
         return user

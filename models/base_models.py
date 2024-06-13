@@ -6,8 +6,8 @@ from fastapi import Query
 
 @dataclass
 class Pagination:
-    offset: int | None = Query(0)
-    limit: int | None = Query(5, le=100)
+    offset: int | None = Query(0, ge=0)
+    limit: int | None = Query(5, le=100, ge=1)
 
 
 @dataclass

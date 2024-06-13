@@ -30,8 +30,12 @@ class CustomerCarService(BaseService):
             options.append(CustomerCar.year > query.year_gt)
         if query.year_lt:
             options.append(CustomerCar.year < query.year_lt)
+        if query.year_in:
+            options.append(CustomerCar.year.in_(query.year_in))
         if query.license_plate:
             options.append(CustomerCar.license_plate.ilike(f'%{query.license_plate}%'))
+        if query.license_plate_in:
+            options.append(CustomerCar.license_plate.in_(query.license_plate_in))
         if query.customer_first_name:
             joins.add(CustomerCar.customer)
             options.append(User.first_name.ilike(f'%{query.customer_first_name}%'))
