@@ -1,8 +1,11 @@
+import os
+
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 
-load_dotenv()
+if os.getenv("ENV") != "test":
+    load_dotenv()
 
 from db import engine
 from routers.auth_router import router as auth_router
