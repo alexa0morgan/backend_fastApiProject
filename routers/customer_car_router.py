@@ -20,7 +20,6 @@ def create_customer_car(
 
 @router.get("/", response_model=list[CustomerCarResponse])
 def read_customer_cars(
-        session: CurrentSession,
         _: AuthService.CurrentAdminUser,
         query: CustomerCarQuery = Depends(),
         customer_car_service: CustomerCarService = Depends()
