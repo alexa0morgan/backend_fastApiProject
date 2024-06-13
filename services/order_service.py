@@ -78,7 +78,7 @@ class OrderService(BaseService):
 
         if current_user.role_id == Role.employee:
             options.append(Order.employee_id == current_user.id)
-        if current_user.role_id == Role.client:
+        if current_user.role_id == Role.customer:
             joins.add(Order.customer_car)
             options.append(CustomerCar.customer_id == current_user.id)
 

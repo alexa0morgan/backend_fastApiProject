@@ -12,7 +12,7 @@ from models.base_models import Pagination, OrderBy
 class Role(int, enum.Enum):
     admin = 1
     employee = 2
-    client = 3
+    customer = 3
 
 
 class UserBase(SQLModel):
