@@ -17,17 +17,17 @@ class BaseService:
     def __init__(self, session: CurrentSession):
         self.session = session
 
-    def get_one(self, cls: TTypeModel, id: int):
-        db_obj = self.session.get(cls, id)
+    def get_one(self, id: int):
+        db_obj = self.session.get(self.cls, id)
 
         if not db_obj:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{cls.__name__} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.cls.__name__} not found")
 
         return db_obj
 
-    def get_all(self, cls: TTypeModel, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
+    def get_all(self, options: list[Any], pagination_and_ordering: Pagination | OrderBy,
                 joins: list | None = None) -> Sequence[TModel]:
-        query = select(cls)
+        query = select(self.cls)
 
         if joins:
             for join in joins:
@@ -36,7 +36,7 @@ class BaseService:
         return self.session.exec(
             query
             .where(*options)
-            .order_by(pagination_and_ordering.get_order_by(cls))
+            .order_by(pagination_and_ordering.get_order_by(self.cls))
             .offset(pagination_and_ordering.offset)
             .limit(pagination_and_ordering.limit)
         ).all()
@@ -56,13 +56,16 @@ class BaseService:
         return self.save_and_refresh(db_obj)
 
     def update(self, id: int, update_data):
-        db_obj = self.get_one(self.cls, id)
+        db_obj = self.get_one(id)
         obj_data = update_data.model_dump(exclude_unset=True)
         db_obj.sqlmodel_update(obj_data)
         return self.save_and_refresh(db_obj)
 
     def delete(self, id: int):
-        db_obj = self.get_one(self.cls, id)
+        db_obj = self.get_one(id)
+
+        if db_obj.deleted_at:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.cls.__name__} not found")
 
         self.mark_deleted(db_obj)
         return {"message": f"{self.cls.__name__} deleted successfully"}

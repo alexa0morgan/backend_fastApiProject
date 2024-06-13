@@ -17,4 +17,4 @@ class BrandService(BaseService):
         if query.name_in:
             options.append(Brand.name.in_(query.name_in))
 
-        return self.get_all(Brand, options, query)
+        return self.get_all(options, query)

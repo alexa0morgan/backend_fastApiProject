@@ -82,10 +82,10 @@ class OrderService(BaseService):
             joins.add(Order.customer_car)
             options.append(CustomerCar.customer_id == current_user.id)
 
-        return self.get_all(Order, options, query, list(joins))
+        return self.get_all(options, query, list(joins))
 
     def toggle_status(self, order_id: int):
-        db_order = self.get_one(Order, order_id)
+        db_order = self.get_one(order_id)
 
         if db_order.status == Status.completed:
             db_order.status = Status.in_progress
@@ -100,7 +100,7 @@ class OrderService(BaseService):
         return db_order
 
     def add_services(self, order_id: int, new_services: OrderAddServices):
-        db_order = self.get_one(Order, order_id)
+        db_order = self.get_one(order_id)
 
         for service in db_order.services:  # данные текущих услуг
             if service.id in new_services.service_ids:

@@ -31,4 +31,4 @@ class CarService(BaseService):
             joins.add(Car.brand)
             options.append(Brand.name.in_(query.brand_name_in))
 
-        return self.get_all(Car, options, query, list(joins))
+        return self.get_all(options, query, list(joins))

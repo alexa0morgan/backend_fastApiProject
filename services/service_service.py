@@ -31,4 +31,4 @@ class ServiceService(BaseService):
         if query.time_in:
             options.append(Service.minTime.in_(query.time_in))
 
-        return self.get_all(Service, options, query)
+        return self.get_all(options, query)
