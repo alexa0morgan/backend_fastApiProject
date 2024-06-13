@@ -50,7 +50,7 @@ with Session(engine) as session:
         first_name="Bob",
         last_name="Brown",
         email="bbrown@example.net",
-        role_id=Role.client,
+        role_id=Role.customer,
         send_notifications=False,
         hashed_password=AuthService.hash_password("password"),
     ))
@@ -58,7 +58,7 @@ with Session(engine) as session:
         email="cust@example.com",
         first_name="Customer2",
         last_name="User",
-        role_id=Role.client,
+        role_id=Role.customer,
         hashed_password=AuthService.hash_password("password"),
         send_notifications=True
     ))
@@ -67,7 +67,7 @@ with Session(engine) as session:
         email="deleted1@example.com",
         first_name="Deleted1",
         last_name="User",
-        role_id=Role.client,
+        role_id=Role.customer,
         hashed_password=AuthService.hash_password("password"),
         send_notifications=True,
         deleted_at="2021-10-01T12:00:00Z"
