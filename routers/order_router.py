@@ -17,7 +17,7 @@ router = create_crud_router(
 
 @router.get("/", response_model=list[OrderResponse])
 def read(
-        _: AuthService.CurrentAdminUser,
+        _: AuthService.CurrentUser,
         user: AuthService.CurrentUser,
         query: OrderQuery = Depends(),
         service: OrderService = Depends(),
